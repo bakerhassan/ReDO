@@ -295,6 +295,7 @@ for n in range(opt.nTest):
     img_m_test[n] = (img_m_test[n] / img_m_test[n].max()) * 2 - 1
 
 out_X = torch.full((opt.nMasks, opt.nTest+1, opt.nTest+5, opt.nx, opt.sizex, opt.sizex), -1).to(device)
+print(out_X.shape, x_test.shape, img_m_test.shape);exit(0)
 out_X[:,1:,0] = x_test
 out_X[:,1:,1] = img_m_test
 
