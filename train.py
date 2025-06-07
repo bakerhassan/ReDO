@@ -149,7 +149,7 @@ if opt.dataset == 'sss':
 
     def transform_fn(img, mask):
         img = F.interpolate(img.unsqueeze(0), size=opt.sizex, mode='nearest').squeeze(0)
-        mask = F.interpolate(mask.unsqueeze(0).unsqueeze(0).float(), size=opt.sizex, mode='nearest').squeeze(0).long()
+        mask = F.interpolate(mask.unsqueeze(0).float(), size=opt.sizex, mode='nearest').squeeze(0).long()
         return img, mask
 
 
