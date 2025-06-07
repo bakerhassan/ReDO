@@ -133,7 +133,7 @@ if opt.dataset == 'lfw':
                                  ]),)
 if opt.dataset == 'sss':
     data = torch.load('/lustre/cniel/onr/sss_masks_legacy.pt')
-    fg_images, masks = data['images'], data['masks']
+    fg_images, masks = data['images'].repeat(1,3,1,1), data['masks']
     class TransformWrapper(torch.utils.data.Dataset):
         def __init__(self, tensor_dataset, transform_fn):
             self.dataset = tensor_dataset
