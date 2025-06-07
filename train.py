@@ -21,6 +21,7 @@ import torchvision
 import torchvision.transforms as transforms
 import torchvision.utils as vutils
 import torch.nn.functional as F
+from torch.utils.data import TensorDataset
 
 import datasets
 import models
@@ -30,7 +31,7 @@ import models
 #############################################################################
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--dataset', default="flowers", help='flowers | cub | lfw')
+parser.add_argument('--dataset', default="sss", help='flowers | cub | lfw | sss')
 parser.add_argument('--dataroot', default='./data', help='path to dataset')
 parser.add_argument('--nx', type=int, default=3, help='number of canals of the input image')
 parser.add_argument('--sizex', type=int, default=128, help='size of the input image')
@@ -130,6 +131,33 @@ if opt.dataset == 'lfw':
                                                                transforms.CenterCrop(opt.sizex),
                                                                transforms.ToTensor(),
                                  ]),)
+if opt.dataset == 'sss':
+    data = torch.load('/lustre/cniel/onr/sss_masks.pt')
+    fg_images, masks = data['images'], data['masks']
+    class TransformWrapper(torch.utils.data.Dataset):
+        def __init__(self, tensor_dataset, transform_fn):
+            self.dataset = tensor_dataset
+            self.transform = transform_fn
+
+        def __len__(self):
+            return len(self.dataset)
+
+        def __getitem__(self, idx):
+            x, y = self.dataset[idx]
+            return self.transform(x, y)
+
+
+    def transform_fn(img, mask):
+        img = F.interpolate(img.unsqueeze(0), size=opt.sizex, mode='nearest').squeeze(0)
+        mask = F.interpolate(mask.unsqueeze(0).unsqueeze(0).float(), size=opt.sizex, mode='nearest').squeeze(0).long()
+        return img, mask
+
+
+    raw_dataset = TensorDataset(fg_images, masks)
+    trainset = TransformWrapper(raw_dataset, transform_fn)
+    testset = TransformWrapper(raw_dataset, transform_fn)
+    valset = TransformWrapper(raw_dataset, transform_fn)
+
 if opt.dataset == 'cub':
     trainset = datasets.CUBDataset(opt.dataroot,
                                    "train",
