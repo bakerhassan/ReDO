@@ -9,6 +9,8 @@ import datasets
 from torch.utils.data import TensorDataset
 import torch.nn.functional as F
 
+import matplotlib.cm as cm
+
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--batch_size', type=int, default=40, help='number of images')
@@ -144,13 +146,37 @@ with torch.no_grad():
 
     # or using ground truth masks:
     # xGen = netGenX(torch.cat((mData, 1-mData),1), z) + (xData.unsqueeze(1) * torch.cat((1-mData, mData),1).unsqueeze(2))
+    def apply_colormap_bupu_r(tensor):
+        """
+        Apply the BuPu_r colormap to a 2D or 3D tensor (C=1 or HxW), return 3-channel RGB tensor.
+        """
+        if tensor.ndim == 3:  # [1, H, W] or [C, H, W]
+            tensor = tensor.squeeze(0)
+        np_img = tensor.cpu().numpy()
+        cmap = cm.get_cmap('BuPu_r')
+        colored = cmap(np_img)[:, :, :3]  # RGBA → RGB
+        return torch.tensor(colored).permute(2, 0, 1)  # [H, W, C] → [C, H, W]
 
-    # Saving the images:
-    out = torch.cat((xData*.5+.5,
-                     mData.expand_as(xData),
-                     mPred[:,0:1].expand_as(xData),
-                     (mPred[:,1:2] >= .5).float().expand_as(xData),
-                     xGen[:,0] *.5+.5,
-                     xGen[:,1]*.5+.5),
-                    1)
+
+    # Apply colormap to all except mData and mPred
+    xData_color = torch.stack([apply_colormap_bupu_r(img * 0.5 + 0.5) for img in xData])
+    xGen0_color = torch.stack([apply_colormap_bupu_r(img * 0.5 + 0.5) for img in xGen[:, 0]])
+    xGen1_color = torch.stack([apply_colormap_bupu_r(img * 0.5 + 0.5) for img in xGen[:, 1]])
+
+    # Expand mData and mPred to match RGB
+    mData_rgb = mData.expand(-1, 3, -1, -1)  # [N, 1, H, W] → [N, 3, H, W]
+    mPred0_rgb = mPred[:, 0:1].expand(-1, 3, -1, -1)
+    mPred1_rgb = (mPred[:, 1:2] >= 0.5).float().expand(-1, 3, -1, -1)
+
+    # Concatenate all
+    out = torch.cat((
+        xData_color,  # colored
+        mData_rgb,  # grayscale/binary
+        mPred0_rgb,  # grayscale/binary
+        mPred1_rgb,  # grayscale/binary thresholded
+        xGen0_color,  # colored
+        xGen1_color  # colored
+    ), dim=1)
+
+
     torchvision.utils.save_image(out.view(-1,3,128,128), 'out.png', normalize=True, nrow=6)
