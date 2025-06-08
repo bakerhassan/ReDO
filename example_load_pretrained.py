@@ -153,4 +153,4 @@ with torch.no_grad():
                      xGen[:,0] *.5+.5,
                      xGen[:,1]*.5+.5),
                     1)
-    torchvision.utils.save_image(out.view(-1,3,128,128), 'out.png', normalize=True, range=(0,1), nrow=6)
+    torchvision.utils.save_image(out.view(-1,3,128,128), 'out.png', normalize=True, nrow=6)
