@@ -6,6 +6,8 @@ import torchvision
 
 import models
 import datasets
+from torch.utils.data import TensorDataset
+import torch.nn.functional as F
 
 parser = argparse.ArgumentParser()
 
@@ -94,6 +96,30 @@ if opt.dataset == 'flowers':
 if opt.dataset == 'cmnist':
     dataset = datasets.CMNISTDataset(dataPath=load_options.dataroot,
                                      sets='train')
+if opt.dataset == 'sss':
+    data = torch.load('/lustre/cniel/onr/sss_masks_legacy.pt')
+    fg_images, masks = data['images'].repeat(1, 3, 1, 1), data['masks']
+    class TransformWrapper(torch.utils.data.Dataset):
+        def __init__(self, tensor_dataset, transform_fn):
+            self.dataset = tensor_dataset
+            self.transform = transform_fn
+
+        def __len__(self):
+            return len(self.dataset)
+
+        def __getitem__(self, idx):
+            x, y = self.dataset[idx]
+            return self.transform(x, y)
+
+
+    def transform_fn(img, mask):
+        img = F.interpolate(img.unsqueeze(0), size=opt.sizex, mode='nearest').squeeze(0)
+        mask = F.interpolate(mask.unsqueeze(0).float(), size=opt.sizex, mode='nearest').squeeze(0).long()
+        return img, mask
+
+
+    raw_dataset = TensorDataset(fg_images, masks)
+    dataset = TransformWrapper(raw_dataset, transform_fn)
 
 loader = torch.utils.data.DataLoader(dataset, batch_size=load_options.batch_size, shuffle=True)
 xData, mData = next(iter(loader))
