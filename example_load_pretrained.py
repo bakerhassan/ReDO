@@ -173,7 +173,6 @@ with torch.no_grad():
         mData_rgb.cpu(),  # true masks
         mPred0_rgb.cpu(),  # grayscale/binary
         mPred1_rgb.cpu(),  # grayscale/binary thresholded
-        (mPred0_rgb + mPred1_rgb).cpu(),
         xGen0_color.cpu(),  # colored
         xGen1_color.cpu()  # colored
     ), dim=1)
