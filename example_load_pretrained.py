@@ -146,39 +146,17 @@ with torch.no_grad():
 
     # or using ground truth masks:
     # xGen = netGenX(torch.cat((mData, 1-mData),1), z) + (xData.unsqueeze(1) * torch.cat((1-mData, mData),1).unsqueeze(2))
-
     def apply_colormap_bupu_r(tensor):
         """
-        Apply the BuPu_r colormap to a grayscale tensor or batch.
-
-        Args:
-            tensor: Tensor of shape [N, 1, H, W] or [1, H, W] or [H, W]
-
-        Returns:
-            RGB tensor of shape [N, 3, H, W] or [3, H, W]
+        Apply the BuPu_r colormap to a 2D or 3D tensor (C=1 or HxW), return 3-channel RGB tensor.
         """
+        print(tensor.shape)
+        if tensor.ndim == 3:  # [1, H, W] or [C, H, W]
+            tensor = tensor.squeeze(0)
+        np_img = tensor.cpu().numpy()
         cmap = cm.get_cmap('BuPu_r')
-
-        if tensor.ndim == 4:  # [N, 1, H, W]
-            batch_rgb = []
-            for img in tensor:
-                img_np = img.squeeze(0).cpu().numpy()
-                colored = cmap(img_np)[:, :, :3]  # [H, W, 3]
-                rgb_tensor = torch.tensor(colored).permute(2, 0, 1)  # [3, H, W]
-                batch_rgb.append(rgb_tensor)
-            return torch.stack(batch_rgb)  # [N, 3, H, W]
-
-        elif tensor.ndim == 3:  # [1, H, W]
-            img_np = tensor.squeeze(0).cpu().numpy()
-            colored = cmap(img_np)[:, :, :3]
-            return torch.tensor(colored).permute(2, 0, 1)  # [3, H, W]
-
-        elif tensor.ndim == 2:  # [H, W]
-            colored = cmap(tensor.cpu().numpy())[:, :, :3]
-            return torch.tensor(colored).permute(2, 0, 1)
-
-        else:
-            raise ValueError(f"Unsupported tensor shape: {tensor.shape}")
+        colored = cmap(np_img)[:, :, :3]  # RGBA → RGB
+        return torch.tensor(colored).permute(2, 0, 1)  # [H, W, C] → [C, H, W]
 
 
     # Apply colormap to all except mData and mPred
