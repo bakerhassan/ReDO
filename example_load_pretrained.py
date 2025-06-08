@@ -171,12 +171,12 @@ with torch.no_grad():
 
     # Concatenate all
     out = torch.cat((
-        xData_color,  # colored
-        mData_rgb,  # grayscale/binary
-        mPred0_rgb,  # grayscale/binary
-        mPred1_rgb,  # grayscale/binary thresholded
-        xGen0_color,  # colored
-        xGen1_color  # colored
+        xData_color.cpu(),  # colored
+        mData_rgb.cpu(),  # grayscale/binary
+        mPred0_rgb.cpu(),  # grayscale/binary
+        mPred1_rgb.cpu(),  # grayscale/binary thresholded
+        xGen0_color.cpu(),  # colored
+        xGen1_color.cpu()  # colored
     ), dim=1)
 
 
