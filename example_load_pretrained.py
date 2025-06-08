@@ -150,7 +150,7 @@ with torch.no_grad():
         """
         Apply the BuPu_r colormap to a 2D or 3D tensor (C=1 or HxW), return 3-channel RGB tensor.
         """
-        print(tensor.shape)
+        print(tensor.min(),tensor.max())
         if tensor.ndim == 3:  # [1, H, W] or [C, H, W]
             tensor = tensor.squeeze(0)
         np_img = tensor.cpu().numpy()
@@ -160,9 +160,9 @@ with torch.no_grad():
 
 
     # Apply colormap to all except mData and mPred
-    xData_color = torch.stack([apply_colormap_bupu_r(img[0] * 0.5 + 0.5) for img in xData])
-    xGen0_color = torch.stack([apply_colormap_bupu_r(img[0] * 0.5 + 0.5) for img in xGen[:, 0]])
-    xGen1_color = torch.stack([apply_colormap_bupu_r(img[0] * 0.5 + 0.5) for img in xGen[:, 1]])
+    xData_color = torch.stack([apply_colormap_bupu_r(img[0]) for img in xData])
+    xGen0_color = torch.stack([apply_colormap_bupu_r(img[0]) for img in xGen[:, 0]])
+    xGen1_color = torch.stack([apply_colormap_bupu_r(img[0]) for img in xGen[:, 1]])
 
     # Expand mData and mPred to match RGB
     mData_rgb = mData.expand(-1, 3, -1, -1)  # [N, 1, H, W] → [N, 3, H, W]
