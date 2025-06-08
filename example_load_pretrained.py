@@ -178,4 +178,4 @@ with torch.no_grad():
     ), dim=1)
 
 
-    torchvision.utils.save_image(out.view(-1,3,128,128), 'out.png', normalize=True, nrow=7)
+    torchvision.utils.save_image(out.view(-1,3,128,128), 'out.png', normalize=True, nrow=6)
