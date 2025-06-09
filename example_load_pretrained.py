@@ -166,6 +166,7 @@ with torch.no_grad():
     # Expand mData and mPred to match RGB
     mData_rgb = mData.expand(-1, 3, -1, -1)  # [N, 1, H, W] → [N, 3, H, W]
     mPred0_rgb = mPred[:, 0:1].expand(-1, 3, -1, -1)
+    print(xGen0_color.min(),xGen0_color.max())
     # mPred1_rgb = (mPred[:, 1:2] >= 0.5).float().expand(-1, 3, -1, -1)
     # Concatenate all
     out = torch.cat((
@@ -178,4 +179,4 @@ with torch.no_grad():
     ), dim=1)
 
 
-    torchvision.utils.save_image(out.view(-1,3,128,128), 'out.png', normalize=False, nrow=4)
+    torchvision.utils.save_image(out.view(-1,3,128,128), 'out.png', normalize=True, nrow=4)
