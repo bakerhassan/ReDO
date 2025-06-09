@@ -161,7 +161,7 @@ with torch.no_grad():
     # Apply colormap to all except mData and mPred
     xData_color = torch.stack([apply_colormap_bupu_r(img[0]) for img in xData])
     xGen0_color = torch.stack([apply_colormap_bupu_r(img[0]) for img in xGen[:, 0]])
-    xGen1_color = torch.stack([apply_colormap_bupu_r(img[0]) for img in xGen[:, 1]])
+    # xGen1_color = torch.stack([apply_colormap_bupu_r(img[0]) for img in xGen[:, 1]])
 
     # Expand mData and mPred to match RGB
     mData_rgb = mData.expand(-1, 3, -1, -1)  # [N, 1, H, W] → [N, 3, H, W]
@@ -174,8 +174,8 @@ with torch.no_grad():
         mPred0_rgb.cpu(),  # grayscale/binary
         mPred1_rgb.cpu(),  # grayscale/binary thresholded
         xGen0_color.cpu(),  # colored
-        xGen1_color.cpu()  # colored
+        # xGen1_color.cpu()  # colored
     ), dim=1)
 
 
-    torchvision.utils.save_image(out.view(-1,3,128,128), 'out.png', normalize=True, nrow=6)
+    torchvision.utils.save_image(out.view(-1,3,128,128), 'out.png', normalize=True, nrow=5)
