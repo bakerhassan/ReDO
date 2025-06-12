@@ -132,7 +132,7 @@ if opt.dataset == 'lfw':
                                                                transforms.ToTensor(),
                                  ]),)
 if opt.dataset == 'sss':
-    data = torch.load('/lustre/cniel/onr/sss_masks_legacy.pt')
+    data = torch.load('/lustre/cniel/onr/sss_fgbg.pt')
     fg_images, masks = data['images'].repeat(1,3,1,1), data['masks']
     class TransformWrapper(torch.utils.data.Dataset):
         def __init__(self, tensor_dataset, transform_fn):
@@ -337,6 +337,16 @@ while opt.iteration <= opt.nIteration:
         netRecZ.train()
     dStep = (opt.iteration % opt.dStepFreq == 0)
     gStep = (opt.iteration % opt.gStepFreq == 0)
+    fg_indexes = mData.sum((1,2,3)) > 0
+    bg_images = xData[~fg_indexes]
+    xData = xData[fg_indexes]
+    mData = mData[fg_indexes]
+    if bg_images.shape[0] > 0:
+        mEnc = netEncM(bg_images)
+        lossG = mEnc.norm()
+    else:
+        lossG = torch.tensor(0,device=device)
+
     #########################  AutoEncode X #########################
     '''
     Instead of sampling a region at each iteration, fake images for all regions are computed at each iteration.
@@ -347,7 +357,7 @@ while opt.iteration <= opt.nIteration:
         hGen = netGenX(mEnc, zData)
         xGen = (hGen + ((1 - mEnc.unsqueeze(2)) * xData.unsqueeze(1))).view(hGen.size(0) * hGen.size(1), hGen.size(2), hGen.size(3), hGen.size(4))
         dGen = netDX(xGen)
-        lossG = - dGen.mean()
+        lossG += - dGen.mean()
         if opt.wrecZ > 0:
             zRec = netRecZ(hGen.sum(1))
             err_recZ = ((zData - zRec) * (zData - zRec)).mean()
