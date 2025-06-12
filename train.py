@@ -132,7 +132,7 @@ if opt.dataset == 'lfw':
                                                                transforms.ToTensor(),
                                  ]),)
 if opt.dataset == 'sss':
-    data = torch.load('/lustre/cniel/onr/sss_fgbg.pt')
+    data = torch.load('/lustre/cniel/onr/sss_masks_legacy.pt')
     fg_images, masks = data['images'].repeat(1,3,1,1), data['masks']
     class TransformWrapper(torch.utils.data.Dataset):
         def __init__(self, tensor_dataset, transform_fn):
@@ -321,7 +321,6 @@ while opt.iteration <= opt.nIteration:
     except StopIteration:
         disData = iter(trainloader)
         xLoadD, mLoadD = next(disData)
-
     xData = xLoadG.to(device)
     mData = mLoadG.to(device)
     xReal = xLoadD.to(device)
@@ -345,23 +344,20 @@ while opt.iteration <= opt.nIteration:
     '''
     if gStep:
         mEnc = netEncM(xData)
-        if mData.sum() == 0:
-            lossG = mData.norm().mean()
-        else:
-            hGen = netGenX(mEnc, zData)
-            xGen = (hGen + ((1 - mEnc.unsqueeze(2)) * xData.unsqueeze(1))).view(hGen.size(0) * hGen.size(1), hGen.size(2), hGen.size(3), hGen.size(4))
-            dGen = netDX(xGen)
-            lossG = - dGen.mean()
-            if opt.wrecZ > 0:
-                zRec = netRecZ(hGen.sum(1))
-                err_recZ = ((zData - zRec) * (zData - zRec)).mean()
-                lossG += err_recZ * opt.wrecZ
+        hGen = netGenX(mEnc, zData)
+        xGen = (hGen + ((1 - mEnc.unsqueeze(2)) * xData.unsqueeze(1))).view(hGen.size(0) * hGen.size(1), hGen.size(2), hGen.size(3), hGen.size(4))
+        dGen = netDX(xGen)
+        lossG = - dGen.mean()
+        if opt.wrecZ > 0:
+            zRec = netRecZ(hGen.sum(1))
+            err_recZ = ((zData - zRec) * (zData - zRec)).mean()
+            lossG += err_recZ * opt.wrecZ
         lossG.backward()
         optimizerEncM.step()
         optimizerGenX.step()
         if opt.wrecZ > 0:
             optimizerRecZ.step()
-    if dStep and mData.sum() > 0:
+    if dStep:
         netDX.zero_grad()
         with torch.no_grad():
             mEnc = netEncM(xData)
