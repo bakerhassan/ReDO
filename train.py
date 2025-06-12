@@ -345,7 +345,7 @@ while opt.iteration <= opt.nIteration:
         mEnc = netEncM(bg_images)
         lossG = mEnc.norm()
     else:
-        lossG = torch.tensor(0,device=device)
+        lossG = torch.tensor(0.,device=device)
 
     #########################  AutoEncode X #########################
     '''
