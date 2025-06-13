@@ -329,7 +329,7 @@ while opt.iteration <= opt.nIteration:
     bg_images = xData[~fg_indexes]
     xData = xData[fg_indexes]
     mData = mData[fg_indexes]
-    xReal = xReal[mLoadD.sum((1,2,3)).to(device) > 0]
+    # xReal = xReal[mLoadD.sum((1,2,3)).to(device) > 0]
 
     zData = torch.randn((xData.size(0), opt.nMasks, opt.nz, 1, 1), device=device)
     ########################## Reset Nets ############################
