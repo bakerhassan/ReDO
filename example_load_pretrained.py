@@ -101,8 +101,8 @@ if opt.dataset == 'cmnist':
 if opt.dataset == 'sss':
     data = torch.load('/lustre/cniel/onr/sss_fgbg.pt')
     fg_images, masks = data['images'].repeat(1, 3, 1, 1), data['masks']
-    fg_images = fg_images[data['mask'].mean(0) == 0]
-    masks = masks[data['mask'].mean(0) == 0]
+    fg_images = fg_images[data['masks'].mean(0) == 0]
+    masks = masks[data['masks'].mean(0) == 0]
     class TransformWrapper(torch.utils.data.Dataset):
         def __init__(self, tensor_dataset, transform_fn):
             self.dataset = tensor_dataset
