@@ -280,8 +280,7 @@ class _netGenX(nn.Module):
         self.net = nn.ModuleList([_resMaskedGenerator128(nf=nf, nOut=nOut, nc=nc, selfAtt=selfAtt) for k in range(nMasks)])
         self.nMasks = nMasks
     def forward(self, masks, c):
-        masks = masks.unsqueeze(2)
-        print(masks.shape);exit(0)
+        # masks = masks.unsqueeze(2)
         y = []
         for k in range(self.nMasks):
             y.append(self.net[k](masks[:,k], c[:,k], c[:,k]).unsqueeze(1))
