@@ -324,6 +324,13 @@ while opt.iteration <= opt.nIteration:
     xData = xLoadG.to(device)
     mData = mLoadG.to(device)
     xReal = xLoadD.to(device)
+
+    fg_indexes = mData.sum((1,2,3)) > 0
+    bg_images = xData[~fg_indexes]
+    xData = xData[fg_indexes]
+    mData = mData[fg_indexes]
+    xReal = xReal[mLoadD.sum((1,2,3)).to(device) > 0]
+
     zData = torch.randn((xData.size(0), opt.nMasks, opt.nz, 1, 1), device=device)
     ########################## Reset Nets ############################
     netEncM.zero_grad()
@@ -337,10 +344,6 @@ while opt.iteration <= opt.nIteration:
         netRecZ.train()
     dStep = (opt.iteration % opt.dStepFreq == 0)
     gStep = (opt.iteration % opt.gStepFreq == 0)
-    fg_indexes = mData.sum((1,2,3)) > 0
-    bg_images = xData[~fg_indexes]
-    xData = xData[fg_indexes]
-    mData = mData[fg_indexes]
     if bg_images.shape[0] > 0:
         mEnc = netEncM(bg_images)
         lossG = mEnc.norm()
