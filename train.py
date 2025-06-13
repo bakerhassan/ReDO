@@ -327,8 +327,8 @@ while opt.iteration <= opt.nIteration:
 
     fg_indexes = mData.sum((1,2,3)) > 0
     bg_images = xData[~fg_indexes]
-    xData = xData[fg_indexes]
-    mData = mData[fg_indexes]
+    xData = xData[fg_indexes].clone()
+    mData = mData[fg_indexes].clone()
     # xReal = xReal[mLoadD.sum((1,2,3)).to(device) > 0]
 
     zData = torch.randn((xData.size(0), opt.nMasks, opt.nz, 1, 1), device=device)
