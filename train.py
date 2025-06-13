@@ -326,7 +326,7 @@ while opt.iteration <= opt.nIteration:
     xReal = xLoadD.to(device)
 
     fg_indexes = mData.sum((1,2,3)) > 0
-    bg_images = xData[~fg_indexes]
+    bg_images = xData[~fg_indexes].clone()
     xData = xData[fg_indexes].clone()
     mData = mData[fg_indexes].clone()
     # xReal = xReal[mLoadD.sum((1,2,3)).to(device) > 0]
