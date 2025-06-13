@@ -167,15 +167,15 @@ with torch.no_grad():
     mData_rgb = mData.expand(-1, 3, -1, -1)  # [N, 1, H, W] → [N, 3, H, W]
     mPred0_rgb = mPred[:, 0:1].expand(-1, 3, -1, -1)
     print(xGen0_color.min(),xGen0_color.max())
-    # mPred1_rgb = (mPred[:, 1:2] >= 0.5).float().expand(-1, 3, -1, -1)
+    mPred1_rgb = (mPred[:, 1:2] >= 0.5).float().expand(-1, 3, -1, -1)
     # Concatenate all
     out = torch.cat((
         xData_color.cpu(),  # colored
         mData_rgb.cpu(),  # true masks
         mPred0_rgb.cpu(),  # grayscale/binary
-        # mPred1_rgb.cpu(),  # grayscale/binary thresholded
+        mPred1_rgb.cpu(),  # grayscale/binary thresholded
         xGen0_color.cpu(),  # colored
-        # xGen1_color.cpu()  # colored
+        xGen1_color.cpu()  # colored
     ), dim=1)
 
 
