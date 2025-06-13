@@ -305,6 +305,7 @@ valloader = torch.utils.data.DataLoader(valset, batch_size=opt.batchSize, shuffl
 #############################################################################
 genData = iter(trainloader)
 disData = iter(trainloader)
+torch.autograd.set_detect_anomaly(True)
 if not opt.silent:
     pbar = tqdm(total=opt.checkpointFreq)
 while opt.iteration <= opt.nIteration:
@@ -326,9 +327,9 @@ while opt.iteration <= opt.nIteration:
     xReal = xLoadD.to(device)
 
     fg_indexes = mData.sum((1,2,3)) > 0
-    bg_images = xData[~fg_indexes].detach().clone()
-    xData = xData[fg_indexes].detach().clone()
-    mData = mData[fg_indexes].detach().clone()
+    bg_images = xData[~fg_indexes]
+    xData = xData[fg_indexes]
+    mData = mData[fg_indexes]
     # xReal = xReal[mLoadD.sum((1,2,3)).to(device) > 0]
 
     zData = torch.randn((xData.size(0), opt.nMasks, opt.nz, 1, 1), device=device)
