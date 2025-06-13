@@ -353,6 +353,7 @@ while opt.iteration <= opt.nIteration:
     This allow to build an entirely generated image we can feed to the information conservation network instead of partially redrawn images.
     '''
     if gStep:
+        print(xData.shape)
         mEnc = netEncM(xData)
         hGen = netGenX(mEnc, zData)
         xGen = (hGen + ((1 - mEnc.unsqueeze(2)) * xData.unsqueeze(1))).view(hGen.size(0) * hGen.size(1), hGen.size(2), hGen.size(3), hGen.size(4))
