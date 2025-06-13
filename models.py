@@ -280,9 +280,10 @@ class _netGenX(nn.Module):
         self.net = nn.ModuleList([_resMaskedGenerator128(nf=nf, nOut=nOut, nc=nc, selfAtt=selfAtt) for k in range(nMasks)])
         self.nMasks = nMasks
     def forward(self, masks, c):
-        # masks = masks.unsqueeze(2)
+        masks = masks.unsqueeze(2)
         y = []
         for k in range(self.nMasks):
+            print(masks[:,k].shape, c[:,k].shape)
             y.append(self.net[k](masks[:,k], c[:,k], c[:,k]).unsqueeze(1))
         return torch.cat(y,1)
     
