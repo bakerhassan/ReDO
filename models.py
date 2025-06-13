@@ -281,6 +281,7 @@ class _netGenX(nn.Module):
         self.nMasks = nMasks
     def forward(self, masks, c):
         masks = masks.unsqueeze(2)
+        print(masks.shape);exit(0)
         y = []
         for k in range(self.nMasks):
             y.append(self.net[k](masks[:,k], c[:,k], c[:,k]).unsqueeze(1))
