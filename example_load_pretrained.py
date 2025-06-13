@@ -99,7 +99,7 @@ if opt.dataset == 'cmnist':
     dataset = datasets.CMNISTDataset(dataPath=load_options.dataroot,
                                      sets='train')
 if opt.dataset == 'sss':
-    data = torch.load('/lustre/cniel/onr/sss_masks_legacy.pt')
+    data = torch.load('/lustre/cniel/onr/sss_fgbg.pt')
     fg_images, masks = data['images'].repeat(1, 3, 1, 1), data['masks']
     class TransformWrapper(torch.utils.data.Dataset):
         def __init__(self, tensor_dataset, transform_fn):
