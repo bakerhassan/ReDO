@@ -159,7 +159,7 @@ with torch.no_grad():
         np_img = (np_img - np_img.min()) / (np_img.max() - np_img.min() + 1e-8)
         cmap = cm.get_cmap('BuPu_r')
         colored = cmap(np_img)[:, :, :3]  # RGBA → RGB
-        return torch.tensor(colored).permute(2, 0, 1)  # [H, W, C] → [C, H, W]
+        return torch.tensor(colored,dtype=torch.float32).permute(2, 0, 1)  # [H, W, C] → [C, H, W]
 
 
     # Apply colormap to all except mData and mPred
