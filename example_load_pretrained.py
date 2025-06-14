@@ -125,7 +125,7 @@ if opt.dataset == 'sss':
     raw_dataset = TensorDataset(fg_images, masks)
     dataset = TransformWrapper(raw_dataset, transform_fn)
 
-loader = torch.utils.data.DataLoader(dataset, batch_size=10, shuffle=True)
+loader = torch.utils.data.DataLoader(dataset, batch_size=load_options.batch_size, shuffle=True)
 xData, mData = next(iter(loader))
 xData = xData.to(device)
 mData = mData.to(device)
@@ -183,4 +183,5 @@ with torch.no_grad():
     ), dim=1)
 
     out = out.clamp(0, 1)
+    out = out[:10]
     torchvision.utils.save_image(out.view(-1,3,128,128), 'out.png', normalize=False, nrow=6)
