@@ -180,5 +180,5 @@ with torch.no_grad():
         xGen1_color.cpu()  # colored
     ), dim=1)
 
-
-    torchvision.utils.save_image(out.view(-1,3,128,128), 'out.png', normalize=True, nrow=6)
+    out = out.clamp(0, 1)
+    torchvision.utils.save_image(out.view(-1,3,128,128), 'out.png', normalize=False, nrow=6)
