@@ -347,8 +347,7 @@ while opt.iteration <= opt.nIteration:
     gStep = (opt.iteration % opt.gStepFreq == 0)
     if bg_images.shape[0] > 0:
         mEnc = netEncM(bg_images)
-        print(mEnc.shape);exit(0)
-        lossG = mEnc.norm()
+        lossG = mEnc[:,-1].norm()
     else:
         lossG = torch.tensor(0.,device=device)
 
