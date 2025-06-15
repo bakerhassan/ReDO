@@ -99,7 +99,7 @@ if opt.dataset == 'cmnist':
     dataset = datasets.CMNISTDataset(dataPath=load_options.dataroot,
                                      sets='train')
 if opt.dataset == 'sss':
-    data = torch.load('/lustre/cniel/onr/sss_fgbg.pt')
+    data = torch.load('/lustre/cniel/onr/sss_masks_legacy.pt')
     fg_images, masks = data['images'].repeat(1, 3, 1, 1), data['masks']
     fg_images = fg_images[data['masks'].float().mean((1,2,3)) == 0]
     masks = masks[data['masks'].float().mean((1,2,3)) == 0]
