@@ -359,7 +359,6 @@ while opt.iteration <= opt.nIteration:
     '''
     if gStep:
         mEnc = netEncM(xData)
-        print(mEnc.shape)
         hGen = netGenX(mEnc, zData)
         xGen = (hGen + ((1 - mEnc.unsqueeze(2)) * xData.unsqueeze(1))).view(hGen.size(0) * hGen.size(1), hGen.size(2), hGen.size(3), hGen.size(4))
         dGen = netDX(xGen)
