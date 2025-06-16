@@ -281,7 +281,7 @@ def evaluate(netEncM, loader, device, nMasks=2):
         nbIter += 1
     # minRegionSize = min((mPred[:,:1] >= .5).float().mean().item(), (mPred[:,:1] < .5).float().mean().item())
     # minRegionSize = min(mPred[:,:1].mean().item(), mPred[:,1:].mean().item())
-    minRegionSize = mPred[:,:-1].mean().item()
+    minRegionSize = min(mPred[:,:1].mean().item(), mPred[:,1:].mean().item())
     return sumScoreAcc / nbIter, sumScoreIoU / nbIter, minRegionSize
 
 x_test, m_test = next(iter(torch.utils.data.DataLoader(testset, batch_size=opt.nTest, shuffle=True, num_workers=4, drop_last=True)))
