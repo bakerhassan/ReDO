@@ -183,5 +183,5 @@ with torch.no_grad():
     ), dim=1)
 
     out = out.clamp(0, 1)
-    out = out[:10]
+    out = out[10:20]
     torchvision.utils.save_image(out.view(-1,3,128,128), 'out.png', normalize=False, nrow=6)
